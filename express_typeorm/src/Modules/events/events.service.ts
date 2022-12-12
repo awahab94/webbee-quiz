@@ -14,6 +14,8 @@ export class EventsService {
     return await this.eventRepository.find();
   }
 
+
+
   /* TODO: complete getEventsWithWorkshops so that it returns all events including the workshops
     Requirements:
     - maximum 2 sql queries
@@ -91,8 +93,11 @@ export class EventsService {
     ```
      */
 
-  async getEventsWithWorkshops() {
-    throw new Error('TODO task 1');
+  async getEventsWithWorkshops()  {
+    const events =  await this.eventRepository.find({
+      relations:["workshops"]
+    });
+    return events
   }
 
   /* TODO: complete getFutureEventWithWorkshops so that it returns events with workshops, that have not yet started
@@ -162,6 +167,11 @@ export class EventsService {
     ```
      */
   async getFutureEventWithWorkshops() {
-    throw new Error('TODO task 2');
+
+    const date = new Date()
+    const events = await this.eventRepository.createQueryBuilder("event")
+    .leftJoin("event.workShops","workShops")
+    .select(["event","workShops"]).where("workShops.start > :date",{date}).getMany();
+    return events
   }
 }
